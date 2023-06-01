@@ -120,3 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Auto-create primary key when not defining primary key type
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
