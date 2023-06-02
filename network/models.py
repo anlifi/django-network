@@ -20,7 +20,7 @@ class Post(models.Model):
     
 
 class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked")
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
     date = models.DateTimeField(auto_now_add=True)
 
@@ -30,7 +30,7 @@ class Like(models.Model):
 
 class Follower(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    follows = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -38,4 +38,4 @@ class Follower(models.Model):
     
     def is_valid_follower(self):
         # User should not be able to follow himself
-        return self.user != self.following
+        return self.user != self.follows
