@@ -3,6 +3,13 @@ from ..models import User, Post, Like, Follower
 
 # Create your tests here.
 
+class UserTestCase(TestCase):
+
+    def test_user_string(self):
+        u = User.objects.create(username="user")
+        self.assertEqual(str(u), f"User ID: {u.pk}, Username: user")
+
+
 class PostTestCase(TestCase):
 
     def setUp(self):       
@@ -22,6 +29,11 @@ class PostTestCase(TestCase):
             self.assertEqual(u1.posts.count(), 2)
         with self.subTest():
             self.assertEqual(u2.posts.count(), 1)
+    
+    def test_post_string(self):
+        u = User.objects.get(username="user1")
+        p = Post.objects.get(user=u, content="aaa")
+        self.assertEqual(str(p), f"user1 created post {p.pk} on {p.create_date}, last updated: {p.update_date}")
 
 
 class LikeTestCase(TestCase):
@@ -56,6 +68,13 @@ class LikeTestCase(TestCase):
             self.assertEqual(p1.likes.count(), 2)
         with self.subTest():
             self.assertEqual(p2.likes.count(), 1)
+    
+    def test_like_string(self):
+        u1 = User.objects.get(username="user1")
+        p1 = Post.objects.get(user=u1, content="aaa")
+        l = Like.objects.get(user=u1, post=p1)
+        self.assertEqual(str(l), f"Post {p1.pk} liked by user1")
+
 
 class FollowerTestCase(TestCase):
 
@@ -77,6 +96,12 @@ class FollowerTestCase(TestCase):
     def test_followers_count(self):
         u = User.objects.get(username="user2")
         self.assertEqual(u.followers.count(), 3)
+
+    def test_follower_string(self):
+        u1 = User.objects.get(username="user1")
+        u2 = User.objects.get(username="user2")
+        f = Follower.objects.get(user=u1, follows=u2)
+        self.assertEqual(str(f), "user1 started following user2")
     
     def test_valid_follower(self):
         u1 = User.objects.get(username="user1")

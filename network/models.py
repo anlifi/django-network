@@ -34,7 +34,7 @@ class Follower(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user} started following {self.following}"
+        return f"{self.user.username} started following {self.follows.username}"
     
     def is_valid_follower(self):
         # User should not be able to follow himself
