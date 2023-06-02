@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'network',
+    'django_nose',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,4 +124,14 @@ STATIC_URL = '/static/'
 
 
 # Auto-create primary key when not defining primary key type
+
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+
+# Testing
+
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = [
+    '--cover-erase',
+    '--cover-package=network',
+]
