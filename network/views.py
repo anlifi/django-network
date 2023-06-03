@@ -42,6 +42,11 @@ def post_form(request):
     })
 
 
+@login_required
+def profile(request):
+    return render(request, "network/profile.html")
+
+
 def login_view(request):
     if request.method == "POST":
 
