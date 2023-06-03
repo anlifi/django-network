@@ -1,0 +1,10 @@
+{% load crispy_forms_tags %}
+
+<div id="post-form" class="container-fluid border rounded-sm p-4">
+  <form hx-post="{% url 'post_form' %}" hx-target="#post-form" hx-swap="outerHTML">
+    {% csrf_token %}
+    <h4 class="subtitle">New Post</h4>
+    {{ post_form | crispy }}
+    <input class="btn btn-primary" type="submit" value="Post">
+  </form>
+</div>

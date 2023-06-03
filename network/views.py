@@ -1,14 +1,45 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .forms import PostForm
+from .models import User, Post, Like, Follower
 
 
 def index(request):
-    return render(request, "network/index.html")
+    # Check if user is logged in
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+
+    # Return index page with empty form and all posts
+    form = PostForm()
+    posts = Post.objects.all().order_by("update_date")
+    return render(request, "network/index.html", {
+        "post_form": form,
+        "posts": posts
+    })
+
+
+def post_form(request):
+    # Get form if POST else create new form
+    form = PostForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            # Save form data
+            post = form.save(commit=False)
+            post.user = request.user
+            post.save()
+            # Return new post confirmation partial
+            return render(request, "network/post_form_confirm.html")
+    
+    # Return post form partial (including validation errors)
+    return render(request, "network/post_form.html", {
+        "post_form": form,
+    })
 
 
 def login_view(request):

@@ -1,0 +1,6 @@
+<div id="post-form-confirm" class="container-fluid border border-success rounded-sm p-4">
+  <p class="text-success">New Post created!</p>
+  <button class="btn btn-secondary" hx-get="{% url 'post_form' %}" hx-target="#post-form-confirm" hx-swap="outerHTML">
+    Create Another
+  </button>
+</div>
