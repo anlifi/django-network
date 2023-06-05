@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django_nose',
     'crispy_forms',
     'crispy_bootstrap4',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
