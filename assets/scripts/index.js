@@ -6,7 +6,10 @@ import * as ReactDOMClient from 'react-dom/client';
 window.htmx = require('htmx.org');
 
 
-// Render PostApp
-const container = document.getElementById('all-posts');
-const root = ReactDOMClient.createRoot(container);
-root.render(<PostApp />);
+window.addEventListener('DOMContentLoaded', () => {
+    // Get all posts container
+    const post_container = document.getElementById('all-posts');
+    // Get new post button an rerender PostApp
+    const postBtn = document.getElementById('post-btn');
+
+});

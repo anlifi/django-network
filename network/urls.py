@@ -11,12 +11,13 @@ urlpatterns = [
     path("register", views.register, name="register"),
     
     path("htmx/post-form/", views.post_form, name="post_form"),
+    path("htmx/all-posts", views.all_posts, name="all_posts"),
 ]
 
-router = routers.DefaultRouter()
-router.register("api/users", views.UserViewSet)
-router.register("api/posts", views.PostViewSet)
-router.register("api/likes", views.LikeViewSet)
-router.register("api/followers", views.FollowerViewSet)
+# router = routers.DefaultRouter()
+# router.register("api/users", views.UserViewSet)
+# router.register("api/posts", views.PostViewSet)
+# router.register("api/likes", views.LikeViewSet)
+# router.register("api/followers", views.FollowerViewSet)
 
-urlpatterns += router.urls
+# urlpatterns += router.urls

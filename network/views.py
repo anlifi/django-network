@@ -27,6 +27,13 @@ def index(request):
     })
 
 
+def all_posts(request):
+    posts = Post.objects.all().order_by("-create_date")
+    return render(request, "network/posts.html", {
+        "posts": posts
+    })
+
+
 def login_view(request):
     if request.method == "POST":
 
@@ -89,8 +96,12 @@ def post_form(request):
             post = form.save(commit=False)
             post.user = request.user
             post.save()
+            # Set custom response headers
+            headers = {
+                "HX-Trigger": "createPost"
+            }
             # Return new post confirmation partial
-            return render(request, "network/post_form_confirm.html")
+            return HttpResponse(render(request, "network/post_form_confirm.html"), headers=headers)
     
     # Return post form partial (including validation errors)
     return render(request, "network/post_form.html", {
@@ -105,43 +116,43 @@ def profile(request):
 
 ### API Views
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class UserViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows users to be viewed or edited
+#     """
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
 
-class PostViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows posts to be viewed or edited
-    """
-    queryset = Post.objects.all().order_by("-create_date")
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class PostViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows posts to be viewed or edited
+#     """
+#     queryset = Post.objects.all().order_by("-create_date")
+#     serializer_class = PostSerializer
+#     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return self.queryset.annotate(
-            username=F("user__username"),
-            likes_count=Coalesce(Count("likes"), 0),
-        )
-
-
-class LikeViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows likes to be viewed or edited
-    """
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+#     def get_queryset(self):
+#         return self.queryset.annotate(
+#             username=F("user__username"),
+#             likes_count=Coalesce(Count("likes"), 0),
+#         )
 
 
-class FollowerViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows followers to be viewed or edited
-    """
-    queryset = Follower.objects.all()
-    serializer_class = FollowerSerializer
-    permission_classes = [permissions.IsAuthenticated]
+# class LikeViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows likes to be viewed or edited
+#     """
+#     queryset = Like.objects.all()
+#     serializer_class = LikeSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+
+# class FollowerViewSet(viewsets.ModelViewSet):
+#     """
+#     API endpoint that allows followers to be viewed or edited
+#     """
+#     queryset = Follower.objects.all()
+#     serializer_class = FollowerSerializer
+#     permission_classes = [permissions.IsAuthenticated]
