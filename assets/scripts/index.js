@@ -1,13 +1,12 @@
+import PostApp from './App';
+import React from 'react';
+import * as ReactDOMClient from 'react-dom/client';
+
 // import HTMX and inject it into the window scope
 window.htmx = require('htmx.org');
 
-// function component() {
-//   const element = document.createElement('div');
-//   element.innerHTML = 'Hello webpack';
-//   return element;
-// }
 
-// window.addEventListener('load', () => { 
-//   let body = document.querySelector('.body');
-//   body.append(component());
-// }); 
+// Render PostApp
+const container = document.getElementById('all-posts');
+const root = ReactDOMClient.createRoot(container);
+root.render(<PostApp />);

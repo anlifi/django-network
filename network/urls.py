@@ -1,5 +1,5 @@
-
 from django.urls import path
+from rest_framework import routers
 
 from . import views
 
@@ -12,3 +12,11 @@ urlpatterns = [
     
     path("htmx/post-form/", views.post_form, name="post_form"),
 ]
+
+router = routers.DefaultRouter()
+router.register("api/users", views.UserViewSet)
+router.register("api/posts", views.PostViewSet)
+router.register("api/likes", views.LikeViewSet)
+router.register("api/followers", views.FollowerViewSet)
+
+urlpatterns += router.urls

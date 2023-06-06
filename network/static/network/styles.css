@@ -7,3 +7,9 @@ html, body {
 .border {
     margin-bottom: 1rem;
 }
+
+#btn-likes {
+    color: red;
+    border-style: none;
+    background-color: inherit;
+}

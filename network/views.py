@@ -1,12 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.db.models import F, Count
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from rest_framework import viewsets, permissions
 
 from .forms import PostForm
 from .models import User, Post, Like, Follower
+from .serializers import UserSerializer, PostSerializer, LikeSerializer, FollowerSerializer
 
 
 def index(request):
@@ -16,35 +20,11 @@ def index(request):
 
     # Return index page with empty form and all posts
     form = PostForm()
-    posts = Post.objects.all().order_by("update_date")
+    posts = Post.objects.all().order_by("-create_date")
     return render(request, "network/index.html", {
         "post_form": form,
         "posts": posts
     })
-
-
-def post_form(request):
-    # Get form if POST else create new form
-    form = PostForm(request.POST or None)
-
-    if request.method == "POST":
-        if form.is_valid():
-            # Save form data
-            post = form.save(commit=False)
-            post.user = request.user
-            post.save()
-            # Return new post confirmation partial
-            return render(request, "network/post_form_confirm.html")
-    
-    # Return post form partial (including validation errors)
-    return render(request, "network/post_form.html", {
-        "post_form": form,
-    })
-
-
-@login_required
-def profile(request):
-    return render(request, "network/profile.html")
 
 
 def login_view(request):
@@ -97,3 +77,71 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+
+def post_form(request):
+    # Get form if POST else create new form
+    form = PostForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            # Save form data
+            post = form.save(commit=False)
+            post.user = request.user
+            post.save()
+            # Return new post confirmation partial
+            return render(request, "network/post_form_confirm.html")
+    
+    # Return post form partial (including validation errors)
+    return render(request, "network/post_form.html", {
+        "post_form": form,
+    })
+
+
+@login_required
+def profile(request):
+    return render(request, "network/profile.html")
+
+
+### API Views
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows posts to be viewed or edited
+    """
+    queryset = Post.objects.all().order_by("-create_date")
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.annotate(
+            username=F("user__username"),
+            likes_count=Coalesce(Count("likes"), 0),
+        )
+
+
+class LikeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows likes to be viewed or edited
+    """
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class FollowerViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows followers to be viewed or edited
+    """
+    queryset = Follower.objects.all()
+    serializer_class = FollowerSerializer
+    permission_classes = [permissions.IsAuthenticated]

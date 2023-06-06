@@ -5,6 +5,6 @@
     {% csrf_token %}
     <h4 class="subtitle">New Post</h4>
     {{ post_form | crispy }}
-    <input class="btn btn-primary" type="submit" value="Post">
+    <input id="post-btn" class="btn btn-primary" type="submit" value="Post">
   </form>
 </div>
