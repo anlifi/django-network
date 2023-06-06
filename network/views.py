@@ -36,6 +36,15 @@ def all_posts(request):
 
 
 @login_required
+def following(request):
+    following = Follower.objects.filter(user=request.user)
+    posts = Post.objects.filter(user__in=[follower.follows for follower in following]).order_by("-create_date")
+    return render(request, "network/following.html", {
+        "posts": posts
+    })
+
+
+@login_required
 def follow(request, username):
     if request.method == "POST":
         try:
