@@ -1,0 +1,21 @@
+<div id="profile" class="container-fluid border rounded-sm p-4" hx-trigger="unFollow from:body"
+  hx-get="{% url 'profile_info' profile_user.username %}" hx-swap="outerHTML">
+  <div class="row">
+    <strong class="col-2">Username:</strong>
+    <p>{{ profile_user.username }}</p>
+  </div>
+  {% if profile_user.username == user.username %}
+  <div class="row">
+    <strong class="col-2">Email:</strong>
+    <p>{{ profile_user.email }}</p>
+  </div>
+  {% endif %}
+  <div class="row">
+    <strong class="col-2">Followers:</strong>
+    <p>{{ profile_user.followers.count }}</p>
+  </div>
+  <div class="row">
+    <strong class="col-2">Following:</strong>
+    <p>{{ profile_user.following.count }}</p>
+  </div>
+</div>

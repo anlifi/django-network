@@ -28,9 +28,68 @@ def index(request):
 
 
 def all_posts(request):
+    # Return all posts partial
     posts = Post.objects.all().order_by("-create_date")
     return render(request, "network/posts.html", {
         "posts": posts
+    })
+
+
+@login_required
+def follow(request, username):
+    if request.method == "POST":
+        try:
+            # Create follower
+            user_to_follow = User.objects.get(username=username)
+            follower = Follower.objects.create(user=request.user, follows=user_to_follow)
+            follower.save()
+            message = None
+        except User.DoesNotExist and Follower.DoesNotExist:
+            message = "Cannot follow user: User does not exist."
+            pass
+        
+        # Set custom response headers
+        headers = {
+            "HX-Trigger": "unFollow"
+        }
+        # Return unfollow partial button
+        return HttpResponse(render(request, "network/unfollow.html", {
+            "profile_user": user_to_follow,
+        }), headers=headers)
+    
+    # Return follow partial button
+    return render(request, "network/follow.html", {
+        "profile_user": user_to_follow,
+        "message": message,
+    })
+
+
+@login_required
+def unfollow(request, username):
+    if request.method == "POST":
+        try:
+            # Delete follower
+            user_to_unfollow = User.objects.get(username=username)
+            follower = Follower.objects.get(user=request.user, follows=user_to_unfollow)
+            follower.delete()
+            message = None
+        except User.DoesNotExist and Follower.DoesNotExist:
+            message = "Cannot unfollow user: User does not exist."
+            pass
+        
+        # Set custom response headers
+        headers = {
+            "HX-Trigger": "unFollow"
+        }
+        # Return follow partial button
+        return HttpResponse(render(request, "network/follow.html", {
+            "profile_user": user_to_unfollow,
+        }), headers=headers)
+    
+    # Return unfollow partial button
+    return render(request, "network/unfollow.html", {
+        "profile_user": user_to_unfollow,
+        "message": message,
     })
 
 
@@ -110,8 +169,35 @@ def post_form(request):
 
 
 @login_required
-def profile(request):
-    return render(request, "network/profile.html")
+def profile(request, username):
+    try:
+        # Get user profile
+        profile_user = User.objects.get(username=username)
+        is_follower = True if Follower.objects.filter(user=request.user, follows=profile_user) else False
+        message = None
+    except User.DoesNotExist:
+        message = "Cannot load profile: User does not exist."
+
+    return render(request, "network/profile.html", {
+        "profile_user": profile_user,
+        "is_follower": is_follower,
+        "message": message,
+    })
+
+
+@login_required
+def profile_info(request, username):
+    try:
+        # Get user profile
+        profile_user = User.objects.get(username=username)
+        message = None
+    except User.DoesNotExist:
+        message = "Cannot load profile info: User does not exist."
+
+    return render(request, "network/profile_info.html", {
+        "profile_user": profile_user,
+        "message": message,
+    })
 
 
 ### API Views

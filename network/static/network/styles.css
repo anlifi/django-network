@@ -13,3 +13,7 @@ html, body {
     border-style: none;
     background-color: inherit;
 }
+
+#profile-title {
+    padding-top: .25rem;
+}

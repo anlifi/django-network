@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="{% url 'index' %}">Network</a>
@@ -17,7 +17,7 @@
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}"><strong>{{ user.username }}</strong></a>
+                        <a class="nav-link" href="{% url 'profile' user.username %}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
