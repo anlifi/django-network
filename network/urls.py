@@ -1,5 +1,4 @@
 from django.urls import path
-from rest_framework import routers
 
 from . import views
 
@@ -21,11 +20,3 @@ urlpatterns = [
     path("htmx/unfollow/<str:username>", views.unfollow, name="unfollow"),
     path("htmx/profile-info/<str:username>", views.profile_info, name="profile_info"),
 ]
-
-# router = routers.DefaultRouter()
-# router.register("api/users", views.UserViewSet)
-# router.register("api/posts", views.PostViewSet)
-# router.register("api/likes", views.LikeViewSet)
-# router.register("api/followers", views.FollowerViewSet)
-
-# urlpatterns += router.urls

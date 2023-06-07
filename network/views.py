@@ -1,17 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import F, Count
-from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from rest_framework import viewsets, permissions
 
 from .forms import PostForm
 from .models import User, Post, Like, Follower
-from .serializers import UserSerializer, PostSerializer, LikeSerializer, FollowerSerializer
+from .serializers import LikeSerializer
 
 POSTS_PER_PAGE = 10
 
@@ -328,47 +325,3 @@ def _get_posts(request, type:str, **username:str):
             raise User.DoesNotExist
         posts = Post.objects.filter(user=profile_user).order_by("-create_date")
     return posts
-
-
-### API Views
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows users to be viewed or edited
-#     """
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-
-# class PostViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows posts to be viewed or edited
-#     """
-#     queryset = Post.objects.all().order_by("-create_date")
-#     serializer_class = PostSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get_queryset(self):
-#         return self.queryset.annotate(
-#             username=F("user__username"),
-#             likes_count=Coalesce(Count("likes"), 0),
-#         )
-
-
-# class LikeViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows likes to be viewed or edited
-#     """
-#     queryset = Like.objects.all()
-#     serializer_class = LikeSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-
-# class FollowerViewSet(viewsets.ModelViewSet):
-#     """
-#     API endpoint that allows followers to be viewed or edited
-#     """
-#     queryset = Follower.objects.all()
-#     serializer_class = FollowerSerializer
-#     permission_classes = [permissions.IsAuthenticated]
