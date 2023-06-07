@@ -4,7 +4,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.db.models import F, Count
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from rest_framework import viewsets, permissions
@@ -101,6 +101,26 @@ def unfollow(request, username):
     })
 
 
+@login_required
+def like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    # Update likes
+    try:
+        # Delete like if exists
+        like = Like.objects.get(user=request.user, post=post)
+        like.delete()    
+    except Like.DoesNotExist:
+        # Create like
+        Like.objects.create(user=request.user, post=post)
+    except:
+        return HttpResponse("Could not update like", status=400)
+
+    # Return updated likes for post
+    post_likes = Like.objects.filter(post=post)
+    serializer = LikeSerializer(post_likes, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
 def login_view(request):
     if request.method == "POST":
 
@@ -153,7 +173,7 @@ def register(request):
         return render(request, "network/register.html")
 
 
-def posts(request, type:str, **username:str):
+def posts(request, type:str, username=None):
     # Return all posts partial
     if type == "user" and username:
         if not isinstance(username, str):
@@ -161,6 +181,8 @@ def posts(request, type:str, **username:str):
         posts = _get_posts(request, type, username=username)
     else:
         posts = _get_posts(request, type)
+
+    # Get paginator
     posts = _get_paginator(request, posts)
 
     return render(request, "network/posts.html", {

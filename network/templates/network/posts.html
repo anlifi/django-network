@@ -2,7 +2,15 @@
   <!-- Posts -->
   {% for post in posts %}
   <div class="container-fluid border rounded-sm p-4">
+    <h4><a href="{% url 'profile' post.user.username %}" class="text-dark">{{ post.user.username }}</a></h4>
     {% include "network/post_detail.html" %}
+    <div class="container-fluid">
+      <small class="row text-muted">{{ post.create_date }}</small>
+      <span class="row">
+        <button id="btn-post-{{ post.id }}" class="btn-likes"><i class="fa fa-heart"></i></button>
+        <span class="post-likes">{{ post.likes.count}}</span>
+      </span>
+    </div>
   </div>
   {% empty %}
   <span>No posts yet.</span>
@@ -12,26 +20,26 @@
   <div id="pagination" class="mb-3">
     {% if type == "user" %}
     {% if posts.has_previous %}
-    <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}"
+    <button class="btn btn-primary btn-page" hx-get="{% url 'posts' type=type username=profile_username %}"
       hx-vals='{"page": "{{ posts.previous_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
       Previous
     </button>
     {% endif %}
     {% if posts.has_next %}
-    <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}"
+    <button class="btn btn-primary btn-page" hx-get="{% url 'posts' type=type username=profile_username %}"
       hx-vals='{"page": "{{ posts.next_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
       Next
     </button>
     {% endif %}
     {% else %}
     {% if posts.has_previous %}
-    <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}"
+    <button class="btn btn-primary btn-page" hx-get="{% url 'posts' type=type %}"
       hx-vals='{"page": "{{ posts.previous_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
       Previous
     </button>
     {% endif %}
     {% if posts.has_next %}
-    <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}"
+    <button class="btn btn-primary btn-page" hx-get="{% url 'posts' type=type %}"
       hx-vals='{"page": "{{ posts.next_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
       Next
     </button>

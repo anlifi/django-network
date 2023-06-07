@@ -1,13 +1,8 @@
 <form hx-get="{% url 'post_edit' post.id %}" hx-target="this" hx-swap="innerHTML">
-  <h4>{{ post.user.username }}</h4>
   {% if post.user.username == request.user.username %}
-  <button id="edit-post" class="btn btn-link p-0" type="submit">Edit</button>
+  <button class="btn btn-link p-0" type="submit">Edit</button>
   {% endif %}
   <div class="container-fluid">
-    <span id="post-content" class="row">{{ post.content }}</span>
-    <small class="row text-muted">{{ post.create_date }}</small>
-    <span id="post-likes" class="row">
-      <button id="btn-likes"><i class="fa fa-heart"></i></button>{{ post.likes.count}}
-    </span>
+    <span class="row">{{ post.content }}</span>
   </div>
 </form>
