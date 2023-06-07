@@ -43,6 +43,9 @@
           </nav>
         
         <div class="body container-fluid">
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
             {% block body %}
             {% endblock %}
         </div>

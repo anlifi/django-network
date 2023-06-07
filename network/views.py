@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.db.models import F, Count
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from rest_framework import viewsets, permissions
 
@@ -167,6 +167,58 @@ def posts(request, type:str, **username:str):
         "posts": posts,
         "type": type,
         "profile_username": username
+    })
+
+
+@login_required
+def post_edit(request, post_id):
+    # Get post and pre-fill form
+    post = get_object_or_404(Post, id=post_id)
+
+    # Check if user is owner of post
+    if request.user.username != post.user.username:
+        return render(request, "network/post_detail.html", {
+            "post": post,
+            "message": "Cannot edit post: Not allowed."
+        })
+
+    form = PostForm(instance=post)
+    return render(request, "network/post_edit.html", {
+        "form": form,
+        "post": post
+    })
+
+
+@login_required
+def post_view(request, post_id):
+    # Get post by id
+    post = get_object_or_404(Post, id=post_id)
+
+    # Check if user is owner of post
+    if request.user.username != post.user.username:
+        return render(request, "network/post_detail.html", {
+            "post": post,
+            "message": "Cannot edit post: Not allowed."
+        })
+
+    # If method is PUT, save form data and return post details
+    if request.method == "POST":
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return render(request, "network/post_detail.html", {
+                "post": post
+            })
+        else:
+            return render(request, "network/post_edit.html", {
+                "form": form,
+                "post": post,
+                "message": "Cannot save post: Input not valid."
+            })
+
+    # If method is GET, return post details
+    return render(request, "network/post_detail.html", {
+        "post": post,
     })
 
 

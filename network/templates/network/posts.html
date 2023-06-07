@@ -1,44 +1,41 @@
 <div id="all-posts" hx-trigger="loadPosts from:body" hx-get="{% url 'posts' 'all' %}">
+  <!-- Posts -->
   {% for post in posts %}
   <div class="container-fluid border rounded-sm p-4">
-    <h4>{{ post.user.username }}</h4>
-    <div class="container-fluid">
-      <span class="row">{{ post.content }}</span>
-      <small class="row text-muted">{{ post.create_date }}</small>
-      <span id="post-likes" class="row"><button id="btn-likes"><i class="fa fa-heart"></i></button>{{ post.likes.count }}</span>
-    </div>
+    {% include "network/post_detail.html" %}
   </div>
   {% empty %}
   <span>No posts yet.</span>
   {% endfor %}
 
+  <!-- Pagination -->
   <div id="pagination" class="mb-3">
     {% if type == "user" %}
-      {% if posts.has_previous %}
-      <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}" hx-vals='{"page": "{{ posts.previous_page_number }}"}'
-          hx-target="#all-posts" hx-swap="outerHTML">
-          Previous
-      </button>
-      {% endif %}
-      {% if posts.has_next %}
-      <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}" hx-vals='{"page": "{{ posts.next_page_number }}"}'
-          hx-target="#all-posts" hx-swap="outerHTML">
-          Next
-      </button>
-      {% endif %}
+    {% if posts.has_previous %}
+    <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}"
+      hx-vals='{"page": "{{ posts.previous_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
+      Previous
+    </button>
+    {% endif %}
+    {% if posts.has_next %}
+    <button class="btn btn-primary" hx-get="{% url 'posts' type=type username=profile_username %}"
+      hx-vals='{"page": "{{ posts.next_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
+      Next
+    </button>
+    {% endif %}
     {% else %}
-      {% if posts.has_previous %}
-      <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}" hx-vals='{"page": "{{ posts.previous_page_number }}"}'
-          hx-target="#all-posts" hx-swap="outerHTML">
-          Previous
-      </button>
-      {% endif %}
-      {% if posts.has_next %}
-      <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}" hx-vals='{"page": "{{ posts.next_page_number }}"}'
-          hx-target="#all-posts" hx-swap="outerHTML">
-          Next
-      </button>
-      {% endif %}
+    {% if posts.has_previous %}
+    <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}"
+      hx-vals='{"page": "{{ posts.previous_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
+      Previous
+    </button>
+    {% endif %}
+    {% if posts.has_next %}
+    <button class="btn btn-primary" hx-get="{% url 'posts' type=type %}"
+      hx-vals='{"page": "{{ posts.next_page_number }}"}' hx-target="#all-posts" hx-swap="outerHTML">
+      Next
+    </button>
+    {% endif %}
     {% endif %}
   </div>
 </div>

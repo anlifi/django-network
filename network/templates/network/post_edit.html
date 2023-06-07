@@ -1,0 +1,15 @@
+{% load crispy_forms_tags %}
+
+<form id="post-edit-form">
+  {% csrf_token %}
+  <h4>{{ post.user.username }}</h4>
+  {% if post.user.username == request.user.username %}
+  <button class="btn btn-link p-0 mb-2" type="submit" hx-post="{% url 'post_view' post.id %}" hx-target="closest form" hx-swap="outerHTML" hx-include="closest form">Save</button>
+  <button class="btn btn-link p-0 mb-2" type="submit" hx-get="{% url 'post_view' post.id %}" hx-target="closest form" hx-swap="outerHTML">Cancel</button>
+  {% endif %}
+  {{ form | crispy }}
+  <div class="container-fluid">
+    <small class="row text-muted">{{ post.create_date }}</small>
+    <span id="post-likes" class="row"><button id="btn-likes"><i class="fa fa-heart"></i></button>{{ post.likes.count }}</span>
+  </div>
+</form>
