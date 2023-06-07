@@ -23,17 +23,6 @@
 
 <h4>Posts</h4>
 
-{% for post in profile_user.posts.all %}
-<div class="container-fluid border rounded-sm p-4">
-  <h4>{{ post.user.username }}</h4>
-  <div class="container-fluid">
-    <span class="row">{{ post.content }}</span>
-    <small class="row text-muted">{{ post.create_date }}</small>
-    <span id="post-likes" class="row"><button id="btn-likes"><i class="fa fa-heart"></i></button>{{ post.likes.count }}</span>
-  </div>
-</div>
-{% empty %}
-<span>No posts yet.</span>
-{% endfor %}
+{% include "network/posts.html" %}
 
 {% endblock %}

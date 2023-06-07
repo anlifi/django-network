@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.db.models import F, Count
 from django.db.models.functions import Coalesce
@@ -12,35 +13,33 @@ from .forms import PostForm
 from .models import User, Post, Like, Follower
 from .serializers import UserSerializer, PostSerializer, LikeSerializer, FollowerSerializer
 
+POSTS_PER_PAGE = 10
+
 
 def index(request):
     # Check if user is logged in
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("login"))
 
-    # Return index page with empty form and all posts
+    # Return index page with empty form and all posts (10 per page)
     form = PostForm()
-    posts = Post.objects.all().order_by("-create_date")
+    posts = _get_posts(request, "all")
+    posts = _get_paginator(request, posts)
+
     return render(request, "network/index.html", {
         "post_form": form,
-        "posts": posts
-    })
-
-
-def all_posts(request):
-    # Return all posts partial
-    posts = Post.objects.all().order_by("-create_date")
-    return render(request, "network/posts.html", {
-        "posts": posts
+        "posts": posts,
+        "type": "all",
     })
 
 
 @login_required
 def following(request):
-    following = Follower.objects.filter(user=request.user)
-    posts = Post.objects.filter(user__in=[follower.follows for follower in following]).order_by("-create_date")
+    posts = _get_posts(request, "following")
+    posts = _get_paginator(request, posts)
     return render(request, "network/following.html", {
-        "posts": posts
+        "posts": posts,
+        "type": "following",
     })
 
 
@@ -154,6 +153,23 @@ def register(request):
         return render(request, "network/register.html")
 
 
+def posts(request, type:str, **username:str):
+    # Return all posts partial
+    if type == "user" and username:
+        if not isinstance(username, str):
+            username = username["username"]
+        posts = _get_posts(request, type, username=username)
+    else:
+        posts = _get_posts(request, type)
+    posts = _get_paginator(request, posts)
+
+    return render(request, "network/posts.html", {
+        "posts": posts,
+        "type": type,
+        "profile_username": username
+    })
+
+
 def post_form(request):
     # Get form if POST else create new form
     form = PostForm(request.POST or None)
@@ -166,7 +182,7 @@ def post_form(request):
             post.save()
             # Set custom response headers
             headers = {
-                "HX-Trigger": "createPost"
+                "HX-Trigger": "loadPosts"
             }
             # Return new post confirmation partial
             return HttpResponse(render(request, "network/post_form_confirm.html"), headers=headers)
@@ -182,15 +198,22 @@ def profile(request, username):
     try:
         # Get user profile
         profile_user = User.objects.get(username=username)
+        profile_username = profile_user.username
         is_follower = True if Follower.objects.filter(user=request.user, follows=profile_user) else False
+        posts = _get_posts(request, "user", username=username)
+        posts = _get_paginator(request, posts)
         message = None
     except User.DoesNotExist:
+        profile_user, is_follower, posts, profile_username = None
         message = "Cannot load profile: User does not exist."
 
     return render(request, "network/profile.html", {
         "profile_user": profile_user,
         "is_follower": is_follower,
         "message": message,
+        "posts": posts,
+        "type": "user",
+        "profile_username": profile_username,
     })
 
 
@@ -207,6 +230,30 @@ def profile_info(request, username):
         "profile_user": profile_user,
         "message": message,
     })
+
+
+def _get_paginator(request, posts):
+    paginator = Paginator(posts, POSTS_PER_PAGE)
+    page = request.GET.get("page")
+    posts = paginator.get_page(page)
+    return posts
+
+
+def _get_posts(request, type:str, **username:str):
+    if type == "all":
+        posts = Post.objects.all().order_by("-create_date")
+    elif type == "following":
+        following = Follower.objects.filter(user=request.user)
+        posts = Post.objects.filter(user__in=[follower.follows for follower in following]).order_by("-create_date")
+    elif type == "user":
+        try:
+            profile_user = User.objects.get(username=username["username"])
+        except KeyError:
+            profile_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise User.DoesNotExist
+        posts = Post.objects.filter(user=profile_user).order_by("-create_date")
+    return posts
 
 
 ### API Views

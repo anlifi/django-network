@@ -11,7 +11,8 @@ urlpatterns = [
     path("profile/<str:username>", views.profile, name="profile"),
     path("register", views.register, name="register"),
     
-    path("htmx/all-posts", views.all_posts, name="all_posts"),
+    path("htmx/posts/<str:type>", views.posts, name="posts"),
+    path("htmx/posts/<str:type>/<str:username>", views.posts, name="posts"),
     path("htmx/post-form/", views.post_form, name="post_form"),
     path("htmx/follow/<str:username>", views.follow, name="follow"),
     path("htmx/unfollow/<str:username>", views.unfollow, name="unfollow"),
