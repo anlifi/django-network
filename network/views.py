@@ -1,3 +1,4 @@
+from collections import namedtuple
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -8,9 +9,10 @@ from django.urls import reverse
 
 from .forms import PostForm
 from .models import User, Post, Like, Follower
-from .serializers import LikeSerializer
+from .serializers import UserPostLikeSerializer
 
 POSTS_PER_PAGE = 10
+UserPostLike = namedtuple('UserPostLike', ('likes', 'user_liked'))
 
 
 def index(request):
@@ -105,16 +107,22 @@ def like(request, post_id):
     try:
         # Delete like if exists
         like = Like.objects.get(user=request.user, post=post)
-        like.delete()    
+        like.delete()
+        liked = False
     except Like.DoesNotExist:
         # Create like
         Like.objects.create(user=request.user, post=post)
+        liked = True
     except:
         return HttpResponse("Could not update like", status=400)
 
     # Return updated likes for post
     post_likes = Like.objects.filter(post=post)
-    serializer = LikeSerializer(post_likes, many=True)
+    user_post_likes = UserPostLike(
+        likes=post_likes,
+        user_liked=liked,
+    )
+    serializer = UserPostLikeSerializer(user_post_likes)
     return JsonResponse(serializer.data, safe=False)
 
 

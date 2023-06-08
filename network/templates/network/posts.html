@@ -7,8 +7,11 @@
     <div class="container-fluid">
       <small class="row text-muted">{{ post.create_date }}</small>
       <span class="row">
-        <button id="btn-post-{{ post.id }}" class="btn-likes"><i class="fa fa-heart"></i></button>
-        <span class="post-likes">{{ post.likes.count}}</span>
+        <button id="btn-post-{{ post.id }}"
+          class="btn-likes{% for like in post.likes.all %}{% if user.username in like.get_user_like %} liked{% endif %}{% endfor %}">
+          <i class="fa fa-heart"></i>
+        </button>
+        <span class="post-likes">{{ post.likes.count }}</span>
       </span>
     </div>
   </div>

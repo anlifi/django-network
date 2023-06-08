@@ -9,9 +9,13 @@ html, body {
 }
 
 .btn-likes {
-    color: red;
+    color: grey;
     border-style: none;
     background-color: inherit;
+}
+
+.btn-likes.liked {
+    color: red;
 }
 
 #profile-title {

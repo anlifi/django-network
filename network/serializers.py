@@ -30,6 +30,11 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'post', 'date')
 
 
+class UserPostLikeSerializer(serializers.Serializer):
+    likes = LikeSerializer(many=True)
+    user_liked = serializers.BooleanField()
+
+
 class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower

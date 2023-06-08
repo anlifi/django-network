@@ -63,8 +63,9 @@ function updateLikes() {
       // Send GET request to /like/<post_id> to update likes
       fetch(`/like/${postID}`)
         .then(res => res.json())
-        .then(likes => {
-          postLikes.innerHTML = likes.length;
+        .then(result => {
+          result.user_liked ? btn.classList.add('liked') : btn.classList.remove('liked');
+          postLikes.innerHTML = result.likes.length;
         })
     });
   });
