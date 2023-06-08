@@ -10,8 +10,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // Mutation Observer
 
-// Select all nodes that will be observed for mutations
-let targetNodes = document.querySelectorAll(".btn-page");
+// Select all nodes that will be observed for mutations (paginator buttons)
+let targetNodes = document.querySelectorAll('.btn-page');
 
 // Options for the observer (which mutations to observe)
 const config = { attributes: true, subtree: true };
@@ -19,11 +19,11 @@ const config = { attributes: true, subtree: true };
 // Callback function to execute when mutations are observed
 const callback = (mutationList, observer) => {
   for (const mutation of mutationList) {
-    if (mutation.type === "attributes") {
+    if (mutation.type === 'attributes') {
       // console.log(`The ${mutation.attributeName} attribute was modified.`);
 
       // Recursively observe newly loaded target nodes
-      targetNodes = document.querySelectorAll(".btn-page");
+      targetNodes = document.querySelectorAll('.btn-page');
       targetNodes.forEach(node => {
         observer.observe(node, config);
       })
@@ -36,9 +36,15 @@ const callback = (mutationList, observer) => {
 const observer = new MutationObserver(callback);
 
 // Start observing the target nodes for configured mutations
-targetNodes.forEach(node => {
-  observer.observe(node, config);
-});
+try {
+  targetNodes.forEach(node => {
+    observer.observe(node, config);
+  });
+}
+catch {
+  console.log("no nodes to observe");
+}
+
 
 
 // Helper functions

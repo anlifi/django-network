@@ -303,6 +303,8 @@ def profile_info(request, username):
     })
 
 
+## Helper functions
+
 def _get_paginator(request, posts):
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page = request.GET.get("page")
